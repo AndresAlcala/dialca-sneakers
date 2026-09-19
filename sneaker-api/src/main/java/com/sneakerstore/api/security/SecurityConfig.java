@@ -37,6 +37,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/sneakers/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/sneakers/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/sneakers/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/orders").permitAll() // Habilitamos Checkout para invitados (sin token)
+                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll() // Habilitar lectura de imágenes locales
+                .requestMatchers(HttpMethod.POST, "/api/upload").hasRole("ADMIN") // Subida de fotos solo para ADMIN
+                .requestMatchers("/error").permitAll() // Importante: Permitir ruta de errores para evitar falsos 403
                 .anyRequest().authenticated()
             )
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

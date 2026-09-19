@@ -5,6 +5,7 @@ const AUTH_URL = 'http://localhost:8080/api/auth';
 let authToken = localStorage.getItem('token');
 
 export const sneakerApi = {
+  // Métodos de Autenticación
   setToken: (token) => {
     authToken = token;
     localStorage.setItem('token', token);
@@ -13,6 +14,33 @@ export const sneakerApi = {
   logout: () => {
     authToken = null;
     localStorage.removeItem('token');
+  },
+
+  // Subida de archivos (Imágenes locales)
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // Configurar fetch manualmente para no establecer Content-Type a application/json
+    // El navegador establecerá multipart/form-data automáticamente con el boundary correcto
+    const token = localStorage.getItem('token');
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_URL}/api/upload`, {
+      method: 'POST',
+      headers: headers,
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Error al subir la imagen');
+    }
+
+    return await response.json();
   },
 
   login: async (email, password) => {
@@ -105,6 +133,26 @@ export const sneakerApi = {
     if (!response.ok) {
       if (response.status === 403) throw new Error('No autorizado (Debes iniciar sesión como Admin)');
       throw new Error('Error al añadir talla/stock');
+    }
+    return response.json();
+  },
+
+  /**
+   * Crea una nueva orden de compra enviando el carrito actual.
+   */
+  createOrder: async (orderData) => {
+    const headers = { 'Content-Type': 'application/json' };
+    if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
+    const response = await fetch(`${API_BASE_URL}/orders`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(orderData),
+    });
+    if (!response.ok) {
+      if (response.status === 403) throw new Error('No autorizado. Debes iniciar sesión para comprar.');
+      const errText = await response.text();
+      throw new Error(errText || 'Error al procesar el pago');
     }
     return response.json();
   }

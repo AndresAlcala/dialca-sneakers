@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import CheckoutModal from '../modals/CheckoutModal';
 
 export default function CartDrawer() {
   const { 
@@ -11,6 +12,8 @@ export default function CartDrawer() {
     removeFromCart, 
     cartTotalPrice 
   } = useCart();
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   if (!isCartOpen) return null;
 
@@ -132,6 +135,7 @@ export default function CartDrawer() {
           </div>
           
           <button 
+            onClick={() => setIsCheckoutOpen(true)}
             disabled={cartItems.length === 0}
             className="w-full bg-street-black text-white hover:bg-supreme-red font-black tracking-widest uppercase py-4 transition-colors disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed"
           >
@@ -143,6 +147,12 @@ export default function CartDrawer() {
           </p>
         </div>
       </div>
+      
+      {/* Modal de Checkout */}
+      <CheckoutModal 
+        isOpen={isCheckoutOpen} 
+        onClose={() => setIsCheckoutOpen(false)} 
+      />
     </>
   );
 }

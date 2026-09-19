@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import { sneakerApi } from '../../api/sneakerApi';
 import { useCart } from '../../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductDetailModal({ sneaker, onClose }) {
   const [variants, setVariants] = useState([]);
@@ -10,6 +11,7 @@ export default function ProductDetailModal({ sneaker, onClose }) {
   const [quantity, setQuantity] = useState(1);
   
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!sneaker) return;
@@ -151,7 +153,8 @@ export default function ProductDetailModal({ sneaker, onClose }) {
                   }`}
                 onClick={() => {
                   addToCart(sneaker, selectedVariant, quantity);
-                  onClose(); // Cerrar el modal del producto, el cajón se abrirá automáticamente
+                  onClose(); 
+                  navigate('/cart');
                 }}
               >
                 {selectedVariant ? 'AÑADIR AL CARRITO' : 'SELECCIONA UNA TALLA'}

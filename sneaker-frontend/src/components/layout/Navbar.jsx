@@ -1,9 +1,11 @@
 import React from 'react';
 import { ShoppingBag, Search, Menu } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useNavigate } from 'react-router-dom';
 
-export default function Navbar({ onOpenAdmin, isAuthenticated, onLogout }) {
-  const { cartTotalItems, setIsCartOpen } = useCart();
+export default function Navbar({ isAuthenticated, onLogout }) {
+  const { cartTotalItems } = useCart();
+  const navigate = useNavigate();
   
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-neutral-200">
@@ -41,22 +43,12 @@ export default function Navbar({ onOpenAdmin, isAuthenticated, onLogout }) {
               SALIR
             </button>
           )}
-          <button
-            onClick={onOpenAdmin}
-            className={`text-[10px] font-black tracking-widest border px-3 py-1.5 transition-colors ${
-              isAuthenticated 
-              ? 'text-white bg-supreme-red border-supreme-red hover:bg-black hover:border-black' 
-              : 'text-supreme-red border-supreme-red hover:bg-supreme-red hover:text-white'
-            }`}
-          >
-            ADMIN
-          </button>
           <button aria-label="Buscar" className="hover:text-supreme-red transition-colors">
             <Search className="w-5 h-5" />
           </button>
           <button 
             aria-label="Carrito" 
-            onClick={() => setIsCartOpen(true)}
+            onClick={() => navigate('/cart')}
             className="hover:text-supreme-red transition-colors flex items-center gap-1.5"
           >
             <ShoppingBag className="w-5 h-5" />

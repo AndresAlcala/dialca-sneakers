@@ -10,6 +10,7 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
     brand: '', name: '', price: '', description: '', imageUrl: ''
   });
   const [isSubmittingDrop, setIsSubmittingDrop] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Estado para Crear Variante
   const [selectedSneakerId, setSelectedSneakerId] = useState('');
@@ -36,6 +37,30 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
         description: sneaker.description,
         imageUrl: sneaker.imageUrl
       });
+    }
+  };
+
+  const handleImageUpload = async (e, isEdit = false) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const response = await sneakerApi.uploadImage(file);
+      // El backend devuelve { url: '/uploads/...', message: '...' }
+      // Debemos asegurar que la URL sea absoluta si el backend devuelve relativa y viceversa.
+      // El frontend y backend asumen que /uploads/... se sirve estáticamente desde el backend en localhost:8080.
+      const fullUrl = `http://localhost:8080${response.url}`;
+
+      if (isEdit) {
+        setEditData(prev => ({ ...prev, imageUrl: fullUrl }));
+      } else {
+        setDropData(prev => ({ ...prev, imageUrl: fullUrl }));
+      }
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -165,12 +190,17 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">URL Imagen</label>
-                  <input required
-                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
-                    value={dropData.imageUrl} onChange={e => setDropData({...dropData, imageUrl: e.target.value})}
-                    placeholder="https://..."
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Imagen (Sube una foto)</label>
+                  <input type="file" accept="image/*"
+                    onChange={(e) => handleImageUpload(e, false)}
+                    className="w-full bg-transparent border-2 border-neutral-700 p-2 text-sm outline-none transition-colors cursor-pointer file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-black file:bg-white file:text-black hover:file:bg-supreme-red hover:file:text-white"
                   />
+                  {uploadingImage && <span className="text-[10px] text-supreme-red mt-1 block">Subiendo imagen...</span>}
+                  {dropData.imageUrl && (
+                    <div className="mt-2 h-16 w-16 bg-neutral-800">
+                      <img src={dropData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -304,11 +334,17 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">URL Imagen</label>
-                      <input required
-                        className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
-                        value={editData.imageUrl} onChange={e => setEditData({...editData, imageUrl: e.target.value})}
+                      <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Imagen (Cambiar foto)</label>
+                      <input type="file" accept="image/*"
+                        onChange={(e) => handleImageUpload(e, true)}
+                        className="w-full bg-transparent border-2 border-neutral-700 p-2 text-sm outline-none transition-colors cursor-pointer file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-black file:bg-white file:text-black hover:file:bg-supreme-red hover:file:text-white"
                       />
+                      {uploadingImage && <span className="text-[10px] text-supreme-red mt-1 block">Subiendo imagen...</span>}
+                      {editData.imageUrl && (
+                        <div className="mt-2 h-16 w-16 bg-neutral-800">
+                          <img src={editData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                      )}
                     </div>
                   </div>
 

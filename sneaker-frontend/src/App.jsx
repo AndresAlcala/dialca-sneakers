@@ -1,58 +1,24 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import SneakerGrid from './components/catalog/SneakerGrid';
 import LoadingSpinner from './components/common/LoadingSpinner';
 import ProductDetailModal from './components/modals/ProductDetailModal';
 import AdminModal from './components/modals/AdminModal';
 import LoginModal from './components/modals/LoginModal';
-import CartDrawer from './components/cart/CartDrawer';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import CheckoutSuccessPage from './pages/CheckoutSuccessPage';
 import { sneakerApi } from './api/sneakerApi';
 import { useSneakers } from './hooks/useSneakers';
 import { CartProvider } from './context/CartContext';
 
-export default function App() {
+function MainCatalog() {
   const { sneakers, loading, error, refreshSneakers } = useSneakers();
   const [selectedSneaker, setSelectedSneaker] = useState(null);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
   
-  const handleOpenAdmin = () => {
-    if (isAuthenticated) {
-      setIsAdminOpen(true);
-    } else {
-      setIsLoginOpen(true);
-    }
-  };
-
-  const handleLoginSuccess = (token, role) => {
-    sneakerApi.setToken(token);
-    setIsAuthenticated(true);
-    setIsLoginOpen(false);
-    if (role === 'ADMIN') {
-      setIsAdminOpen(true);
-    }
-  };
-
-  const handleSelectSneaker = (sneaker) => {
-    setSelectedSneaker(sneaker);
-  };
-
-  const closeModal = () => {
-    setSelectedSneaker(null);
-  };
-
   return (
-    <CartProvider>
-      <div className="min-h-screen bg-white text-black selection:bg-supreme-red selection:text-white">
-      {/* Navbar Minimalista / Urban Streetwear */}
-      <Navbar onOpenAdmin={handleOpenAdmin} isAuthenticated={isAuthenticated} onLogout={() => {
-        sneakerApi.logout();
-        setIsAuthenticated(false);
-        setIsAdminOpen(false);
-      }} />
-
-      {/* Main Content */}
+    <>
       <main className="max-w-7xl mx-auto px-6 py-16">
         <div className="mb-12 border-b border-neutral-200 pb-6 flex items-baseline justify-between">
           <div>
@@ -76,37 +42,80 @@ export default function App() {
           </div>
         )}
 
-        {/* Grid de Productos */}
         {!loading && !error && (
-          <SneakerGrid sneakers={sneakers} onSelectSneaker={handleSelectSneaker} />
+          <SneakerGrid sneakers={sneakers} onSelectSneaker={setSelectedSneaker} />
         )}
       </main>
 
-      {/* Modal / Vista de Detalle y Tallas */}
       {selectedSneaker && (
-        <ProductDetailModal sneaker={selectedSneaker} onClose={closeModal} />
+        <ProductDetailModal sneaker={selectedSneaker} onClose={() => setSelectedSneaker(null)} />
       )}
+    </>
+  );
+}
 
-      {/* Modal de Login */}
-      {isLoginOpen && (
-        <LoginModal 
-          onClose={() => setIsLoginOpen(false)} 
-          onLoginSuccess={handleLoginSuccess} 
+function AppContent() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const location = useLocation();
+
+  // Ocultamos la barra de navegación en el checkout para evitar distracciones
+  const showNavbar = !location.pathname.startsWith('/checkout');
+
+  return (
+    <div className="min-h-screen bg-white text-black selection:bg-supreme-red selection:text-white">
+      {showNavbar && (
+        <Navbar 
+          isAuthenticated={isAuthenticated} 
+          onLogout={() => {
+            sneakerApi.logout();
+            setIsAuthenticated(false);
+          }} 
         />
       )}
 
-      {/* Modal de Administrador */}
-      {isAdminOpen && isAuthenticated && (
-        <AdminModal 
-          onClose={() => setIsAdminOpen(false)} 
-          sneakers={sneakers} 
-          refreshCatalog={refreshSneakers} 
-        />
-      )}
-      
-      {/* Cajón del Carrito */}
-      <CartDrawer />
+      <Routes>
+        <Route path="/" element={<MainCatalog />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+        {/* Rutas para administradores */}
+        <Route path="/admin" element={<AdminRoute isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />} />
+      </Routes>
     </div>
+  );
+}
+
+// Subcomponente para manejar la vista de Admin (simulando que está montada sobre la principal o como página independiente)
+function AdminRoute({ isAuthenticated, setIsAuthenticated }) {
+  const { sneakers, refreshSneakers } = useSneakers();
+  
+  if (!isAuthenticated) {
+    return (
+      <LoginModal 
+        onClose={() => window.location.href = '/'} 
+        onLoginSuccess={(token) => {
+          sneakerApi.setToken(token);
+          setIsAuthenticated(true);
+        }} 
+      />
+    );
+  }
+
+  return (
+    <AdminModal 
+      onClose={() => window.location.href = '/'} 
+      sneakers={sneakers} 
+      refreshCatalog={refreshSneakers} 
+    />
+  );
+}
+
+export default function App() {
+  return (
+    <CartProvider>
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </CartProvider>
   );
 }
