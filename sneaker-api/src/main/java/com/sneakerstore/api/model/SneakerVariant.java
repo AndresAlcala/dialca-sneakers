@@ -1,0 +1,35 @@
+package com.sneakerstore.api.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "sneaker_variants")
+public class SneakerVariant {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // Relación: Muchas variaciones (tallas) pertenecen a un (1) modelo de tenis
+    @ManyToOne
+    @JoinColumn(name = "sneaker_id", nullable = false)
+    private Sneaker sneaker;
+
+    // La talla del tenis (Ej: 8.5, 9.0, 10.0 en escala US)
+    @Column(nullable = false)
+    private Float size;
+
+    // El color específico de esta variante (Ej: "Blanco/Negro")
+    @Column(nullable = false, length = 50)
+    private String color;
+
+    // El inventario real disponible para esta talla y color exacto
+    @Column(name = "stock_quantity", nullable = false)
+    private Integer stockQuantity;
+}

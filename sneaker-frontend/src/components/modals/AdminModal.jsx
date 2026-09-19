@@ -1,0 +1,339 @@
+import React, { useState } from 'react';
+import { X, Plus, Package, Edit2, ChevronDown } from 'lucide-react';
+import { sneakerApi } from '../../api/sneakerApi';
+
+export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
+  const [activeTab, setActiveTab] = useState('drop'); // 'drop' or 'inventory' or 'edit'
+  
+  // Estado para Crear Drop
+  const [dropData, setDropData] = useState({
+    brand: '', name: '', price: '', description: '', imageUrl: ''
+  });
+  const [isSubmittingDrop, setIsSubmittingDrop] = useState(false);
+
+  // Estado para Crear Variante
+  const [selectedSneakerId, setSelectedSneakerId] = useState('');
+  const [variantData, setVariantData] = useState({ size: '', color: '', stockQuantity: '' });
+  const [isSubmittingVariant, setIsSubmittingVariant] = useState(false);
+
+  // Estado para Editar Drop
+  const [editSneakerId, setEditSneakerId] = useState('');
+  const [editData, setEditData] = useState({
+    brand: '', name: '', price: '', description: '', imageUrl: ''
+  });
+  const [isSubmittingEdit, setIsSubmittingEdit] = useState(false);
+
+  // Cargar datos al seleccionar para editar
+  const handleEditSelect = (e) => {
+    const id = e.target.value;
+    setEditSneakerId(id);
+    const sneaker = sneakers.find(s => s.id.toString() === id.toString());
+    if (sneaker) {
+      setEditData({
+        brand: sneaker.brand,
+        name: sneaker.name,
+        price: sneaker.price,
+        description: sneaker.description,
+        imageUrl: sneaker.imageUrl
+      });
+    }
+  };
+
+  const handleDropSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmittingDrop(true);
+    try {
+      await sneakerApi.createSneaker({
+        ...dropData,
+        price: Number(dropData.price)
+      });
+      alert('¡Drop creado exitosamente!');
+      setDropData({ brand: '', name: '', price: '', description: '', imageUrl: '' });
+      if (refreshCatalog) refreshCatalog();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setIsSubmittingDrop(false);
+    }
+  };
+
+  const handleVariantSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedSneakerId) return alert('Selecciona una zapatilla');
+    setIsSubmittingVariant(true);
+    try {
+      await sneakerApi.createVariant(selectedSneakerId, {
+        size: parseFloat(variantData.size),
+        color: variantData.color || 'Default',
+        stockQuantity: Number(variantData.stockQuantity)
+      });
+      alert('¡Talla y stock añadidos exitosamente!');
+      setVariantData({ size: '', color: '', stockQuantity: '' });
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setIsSubmittingVariant(false);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editSneakerId) return alert('Selecciona una zapatilla para editar');
+    setIsSubmittingEdit(true);
+    try {
+      await sneakerApi.updateSneaker(editSneakerId, {
+        ...editData,
+        price: Number(editData.price)
+      });
+      alert('¡Drop actualizado exitosamente!');
+      setEditSneakerId('');
+      setEditData({ brand: '', name: '', price: '', description: '', imageUrl: '' });
+      if (refreshCatalog) refreshCatalog();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setIsSubmittingEdit(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-street-black text-white border-2 border-white max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
+        
+        {/* Header / Tabs */}
+        <div className="flex border-b-2 border-white sticky top-0 bg-street-black z-10">
+          <button 
+            onClick={() => setActiveTab('drop')}
+            className={`flex-1 p-4 font-black tracking-widest text-sm transition-colors flex items-center justify-center gap-2
+              ${activeTab === 'drop' ? 'bg-supreme-red text-white' : 'text-neutral-400 hover:text-white'}`}
+          >
+            <Plus className="w-4 h-4" /> CREAR DROP
+          </button>
+          <button 
+            onClick={() => setActiveTab('inventory')}
+            className={`flex-1 p-4 font-black tracking-widest text-sm transition-colors flex items-center justify-center gap-2 border-l-2 border-white
+              ${activeTab === 'inventory' ? 'bg-supreme-red text-white' : 'text-neutral-400 hover:text-white'}`}
+          >
+            <Package className="w-4 h-4" /> INVENTARIO
+          </button>
+          <button 
+            onClick={() => setActiveTab('edit')}
+            className={`flex-1 p-4 font-black tracking-widest text-sm transition-colors flex items-center justify-center gap-2 border-l-2 border-white
+              ${activeTab === 'edit' ? 'bg-supreme-red text-white' : 'text-neutral-400 hover:text-white'}`}
+          >
+            <Edit2 className="w-4 h-4" /> EDITAR
+          </button>
+          <button
+            onClick={onClose}
+            className="p-4 border-l-2 border-white hover:bg-white hover:text-black transition-colors"
+            aria-label="Cerrar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-8">
+          {/* TAB 1: CREAR DROP */}
+          {activeTab === 'drop' && (
+            <form onSubmit={handleDropSubmit} className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Marca</label>
+                  <input required
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                    value={dropData.brand} onChange={e => setDropData({...dropData, brand: e.target.value})}
+                    placeholder="Ej. NKE"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Modelo</label>
+                  <input required
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                    value={dropData.name} onChange={e => setDropData({...dropData, name: e.target.value})}
+                    placeholder="Ej. Air Max"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Precio ($)</label>
+                  <input required type="number" step="0.01" min="0"
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                    value={dropData.price} onChange={e => setDropData({...dropData, price: e.target.value})}
+                    placeholder="Ej. 150.00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">URL Imagen</label>
+                  <input required
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                    value={dropData.imageUrl} onChange={e => setDropData({...dropData, imageUrl: e.target.value})}
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Descripción</label>
+                <textarea required rows={3}
+                  className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors resize-none"
+                  value={dropData.description} onChange={e => setDropData({...dropData, description: e.target.value})}
+                  placeholder="Historia o detalles del par..."
+                />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isSubmittingDrop}
+                className="w-full bg-supreme-red hover:bg-white hover:text-black text-white font-black tracking-widest py-4 border-2 border-transparent hover:border-black transition-colors"
+              >
+                {isSubmittingDrop ? 'PROCESANDO...' : 'PUBLICAR DROP'}
+              </button>
+            </form>
+          )}
+
+          {/* TAB 2: INVENTARIO */}
+          {activeTab === 'inventory' && (
+            <form onSubmit={handleVariantSubmit} className="space-y-6">
+              <div className="relative">
+                <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Seleccionar Zapatilla</label>
+                <div className="relative">
+                  <select required
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors text-white appearance-none cursor-pointer"
+                    value={selectedSneakerId} onChange={e => setSelectedSneakerId(e.target.value)}
+                  >
+                    <option value="" disabled className="bg-black text-white">-- Elige un modelo --</option>
+                    {sneakers?.map(s => (
+                      <option key={s.id} value={s.id} className="bg-black text-white">
+                        {s.brand} | {s.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Talla (US)</label>
+                  <input required type="number" step="0.5"
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                    value={variantData.size} onChange={e => setVariantData({...variantData, size: e.target.value})}
+                    placeholder="Ej. 9.5"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Color</label>
+                  <input required
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                    value={variantData.color} onChange={e => setVariantData({...variantData, color: e.target.value})}
+                    placeholder="Ej. Blanco/Negro"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Stock Físico</label>
+                  <input required type="number" min="0" step="1"
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                    value={variantData.stockQuantity} onChange={e => setVariantData({...variantData, stockQuantity: e.target.value})}
+                    placeholder="Ej. 10"
+                  />
+                </div>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={isSubmittingVariant || !selectedSneakerId}
+                className={`w-full font-black tracking-widest py-4 border-2 transition-colors ${
+                  !selectedSneakerId || isSubmittingVariant 
+                  ? 'bg-neutral-800 text-neutral-500 border-neutral-800 cursor-not-allowed'
+                  : 'bg-supreme-red hover:bg-white hover:text-black text-white border-transparent hover:border-black'
+                }`}
+              >
+                {isSubmittingVariant ? 'PROCESANDO...' : 'AÑADIR AL INVENTARIO'}
+              </button>
+            </form>
+          )}
+
+          {/* TAB 3: EDITAR DROP */}
+          {activeTab === 'edit' && (
+            <form onSubmit={handleEditSubmit} className="space-y-6">
+              <div className="relative">
+                <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Seleccionar Zapatilla a Editar</label>
+                <div className="relative">
+                  <select required
+                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors text-white appearance-none cursor-pointer"
+                    value={editSneakerId} onChange={handleEditSelect}
+                  >
+                    <option value="" disabled className="bg-black text-white">-- Elige un modelo --</option>
+                    {sneakers?.map(s => (
+                      <option key={s.id} value={s.id} className="bg-black text-white">
+                        {s.brand} | {s.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+                </div>
+              </div>
+
+              {editSneakerId && (
+                <>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Marca</label>
+                      <input required
+                        className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                        value={editData.brand} onChange={e => setEditData({...editData, brand: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Modelo</label>
+                      <input required
+                        className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                        value={editData.name} onChange={e => setEditData({...editData, name: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Precio ($)</label>
+                      <input required type="number" step="0.01" min="0"
+                        className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                        value={editData.price} onChange={e => setEditData({...editData, price: e.target.value})}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">URL Imagen</label>
+                      <input required
+                        className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
+                        value={editData.imageUrl} onChange={e => setEditData({...editData, imageUrl: e.target.value})}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Descripción</label>
+                    <textarea required rows={3}
+                      className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors resize-none"
+                      value={editData.description} onChange={e => setEditData({...editData, description: e.target.value})}
+                    />
+                  </div>
+
+                  <button 
+                    type="submit" 
+                    disabled={isSubmittingEdit}
+                    className="w-full bg-supreme-red hover:bg-white hover:text-black text-white font-black tracking-widest py-4 border-2 border-transparent hover:border-black transition-colors"
+                  >
+                    {isSubmittingEdit ? 'PROCESANDO...' : 'GUARDAR CAMBIOS'}
+                  </button>
+                </>
+              )}
+            </form>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}

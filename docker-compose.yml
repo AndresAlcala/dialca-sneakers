@@ -1,0 +1,42 @@
+﻿version: '3.8'
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: sneaker_db
+    restart: always
+    environment:
+      POSTGRES_DB: sneakerstore
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./sneaker-api
+    container_name: sneaker_backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/sneakerstore
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./sneaker-frontend
+    container_name: sneaker_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
