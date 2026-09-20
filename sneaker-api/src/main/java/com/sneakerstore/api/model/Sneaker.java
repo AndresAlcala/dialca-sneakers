@@ -32,4 +32,7 @@ public class Sneaker {
 
     @Column(name = "image_url")
     private String imageUrl; // Aquí guardaremos el enlace a tu almacenamiento en la nube después
+
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true; // Soft delete flag
 }

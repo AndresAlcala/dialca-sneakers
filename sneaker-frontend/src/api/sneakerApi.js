@@ -117,6 +117,23 @@ export const sneakerApi = {
   },
 
   /**
+   * Archiva (Soft Delete) un modelo de zapatilla existente.
+   */
+  deleteSneaker: async (id) => {
+    const headers = {};
+    if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (!response.ok) {
+      if (response.status === 403) throw new Error('No autorizado');
+      throw new Error('Error al archivar el drop');
+    }
+  },
+
+  /**
    * Añade una nueva variante (talla/color y stock) a un modelo de zapatilla.
    */
   createVariant: async (sneakerId, variantData) => {

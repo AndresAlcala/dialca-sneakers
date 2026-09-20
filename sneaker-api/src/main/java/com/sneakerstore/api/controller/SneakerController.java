@@ -35,5 +35,12 @@ public class SneakerController {
     public ResponseEntity<Sneaker> updateSneaker(@PathVariable Long id, @RequestBody Sneaker sneakerDetails) {
         Sneaker updatedSneaker = sneakerService.updateSneaker(id, sneakerDetails);
         return ResponseEntity.ok(updatedSneaker);
+        }
+
+    // Endpoint para archivar lógicamente unos tenis existentes (DELETE)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> archiveSneaker(@PathVariable Long id) {
+        sneakerService.archiveSneaker(id);
+        return ResponseEntity.ok().build();
     }
 }

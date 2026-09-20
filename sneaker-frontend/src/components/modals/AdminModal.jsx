@@ -121,6 +121,24 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
     }
   };
 
+  const handleArchiveSneaker = async () => {
+    if (!editSneakerId) return;
+    if (!window.confirm('¿Estás seguro de que deseas archivar este Drop? (Desaparecerá de la tienda pública pero se conservará en los registros)')) {
+      return;
+    }
+    
+    try {
+      await sneakerApi.deleteSneaker(editSneakerId);
+      alert('¡Drop archivado exitosamente!');
+      setEditSneakerId('');
+      setEditData({ brand: '', name: '', price: '', description: '', imageUrl: '' });
+      if (refreshCatalog) refreshCatalog();
+      onClose();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-street-black text-white border-2 border-white max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
@@ -377,6 +395,14 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
                     className="w-full bg-supreme-red hover:bg-white hover:text-black text-white font-black tracking-widest py-4 border-2 border-transparent hover:border-black transition-colors"
                   >
                     {isSubmittingEdit ? 'PROCESANDO...' : 'GUARDAR CAMBIOS'}
+                  </button>
+
+                  <button 
+                    type="button" 
+                    onClick={handleArchiveSneaker}
+                    className="w-full bg-transparent text-red-500 font-black tracking-widest py-4 border-2 border-red-500 hover:bg-red-500 hover:text-white transition-colors mt-4"
+                  >
+                    OCULTAR / ARCHIVAR DROP
                   </button>
                 </>
               )}

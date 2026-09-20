@@ -17,7 +17,7 @@ public class SneakerService {
     private final SneakerRepository sneakerRepository;
 
     public List<Sneaker> getAllSneakers() {
-        return sneakerRepository.findAll(); // Método regalado por JpaRepository
+        return sneakerRepository.findByIsActiveTrue();
     }
 
     public Sneaker createSneaker(Sneaker sneaker) {
@@ -51,5 +51,12 @@ public class SneakerService {
         existingSneaker.setImageUrl(sneakerDetails.getImageUrl() != null ? sneakerDetails.getImageUrl() : existingSneaker.getImageUrl());
 
         return sneakerRepository.save(existingSneaker);
+    }
+
+    public void archiveSneaker(Long id) {
+        Sneaker existingSneaker = sneakerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Zapatilla no encontrada con el ID: " + id));
+        existingSneaker.setActive(false);
+        sneakerRepository.save(existingSneaker);
     }
 }
