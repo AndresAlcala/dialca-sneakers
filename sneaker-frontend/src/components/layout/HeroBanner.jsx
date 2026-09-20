@@ -14,10 +14,10 @@ export default function HeroBanner() {
   };
 
   return (
-    <div className="relative w-full h-[60vh] min-h-[400px] flex items-center bg-neutral-900 overflow-hidden">
+    <div className="relative w-full h-[80vh] min-h-[600px] flex items-center bg-neutral-900 overflow-hidden">
       {/* Imagen de fondo. Se asume que el usuario subió /hero-bg.jpeg a public/ */}
       <div 
-        className="absolute inset-0 z-0 bg-cover bg-center"
+        className="absolute inset-0 z-0 bg-cover bg-[center_top] md:bg-center bg-fixed"
         style={{ backgroundImage: "url('/hero-bg.jpeg')" }}
       />
 

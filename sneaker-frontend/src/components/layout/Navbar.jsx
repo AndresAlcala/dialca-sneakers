@@ -35,7 +35,7 @@ export default function Navbar({ isAuthenticated, onLogout }) {
             <img
               src="/dialca-logo.jpeg"
               alt="DIALCA SNEAKERS"
-              className="h-10 md:h-12 w-auto object-contain cursor-pointer"
+              className="h-16 md:h-20 w-auto object-contain cursor-pointer"
               onClick={() => navigate('/')}
               onError={(e) => {
                 e.target.style.display = 'none';
