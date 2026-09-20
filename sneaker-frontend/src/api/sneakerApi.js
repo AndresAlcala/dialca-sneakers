@@ -29,7 +29,7 @@ export const sneakerApi = {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_URL}/api/upload`, {
+    const response = await fetch(`${API_BASE_URL}/upload`, {
       method: 'POST',
       headers: headers,
       body: formData

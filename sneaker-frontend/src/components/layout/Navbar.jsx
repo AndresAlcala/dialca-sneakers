@@ -46,12 +46,20 @@ export default function Navbar({ isAuthenticated, onLogout }) {
 
           <div className="flex items-center gap-5">
             {isAuthenticated && (
-              <button
-                onClick={onLogout}
-                className="text-[10px] font-black tracking-widest text-neutral-400 hover:text-supreme-red transition-colors"
-              >
-                SALIR
-              </button>
+              <>
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="text-[10px] font-black tracking-widest text-supreme-red hover:text-black transition-colors"
+                >
+                  PANEL ADMIN
+                </button>
+                <button
+                  onClick={onLogout}
+                  className="text-[10px] font-black tracking-widest text-neutral-400 hover:text-supreme-red transition-colors"
+                >
+                  SALIR
+                </button>
+              </>
             )}
             <button aria-label="Buscar" className="hover:text-supreme-red transition-colors">
               <Search className="w-5 h-5" />
