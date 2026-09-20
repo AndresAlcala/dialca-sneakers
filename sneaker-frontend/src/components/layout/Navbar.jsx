@@ -33,7 +33,7 @@ export default function Navbar({ isAuthenticated, onLogout }) {
           {/* Logo de la marca */}
           <div className="flex items-center">
             <img
-              src="/dialca-logo.png"
+              src="/dialca-logo.jpeg"
               alt="DIALCA SNEAKERS"
               className="h-10 md:h-12 w-auto object-contain cursor-pointer"
               onClick={() => navigate('/')}
