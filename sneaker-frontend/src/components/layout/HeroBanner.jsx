@@ -15,10 +15,10 @@ export default function HeroBanner() {
 
   return (
     <div className="relative w-full h-[60vh] min-h-[400px] flex items-center bg-neutral-900 overflow-hidden">
-      {/* Imagen de fondo. Se asume que el usuario subió /hero-bg.jpg a public/ */}
+      {/* Imagen de fondo. Se asume que el usuario subió /hero-bg.jpeg a public/ */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/hero-bg.jpg')" }}
+        style={{ backgroundImage: "url('/hero-bg.jpeg')" }}
       />
 
       {/* Capa de oscurecimiento (overlay) para que el texto blanco resalte siempre */}
