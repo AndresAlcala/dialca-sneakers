@@ -13,13 +13,15 @@ import { sneakerApi } from './api/sneakerApi';
 import { useSneakers } from './hooks/useSneakers';
 import { CartProvider } from './context/CartContext';
 
+import Footer from './components/layout/Footer';
+
 function MainCatalog() {
   const { sneakers, loading, error, refreshSneakers } = useSneakers();
   const [selectedSneaker, setSelectedSneaker] = useState(null);
   
   return (
     <>
-      <main className="max-w-7xl mx-auto px-6 py-16">
+      <main className="max-w-7xl mx-auto px-6 py-16 min-h-screen">
         <div className="mb-12 border-b border-neutral-200 pb-6 flex items-baseline justify-between">
           <div>
             <span className="text-[10px] font-mono tracking-widest uppercase text-neutral-500 block mb-1">
@@ -58,11 +60,11 @@ function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
   const location = useLocation();
 
-  // Ocultamos la barra de navegación en el checkout para evitar distracciones
+  // Ocultamos la barra de navegación y el footer en el checkout para evitar distracciones
   const showNavbar = !location.pathname.startsWith('/checkout');
 
   return (
-    <div className="min-h-screen bg-white text-black selection:bg-supreme-red selection:text-white">
+    <div className="min-h-screen bg-white text-black selection:bg-supreme-red selection:text-white flex flex-col">
       {showNavbar && (
         <Navbar 
           isAuthenticated={isAuthenticated} 
@@ -73,14 +75,20 @@ function AppContent() {
         />
       )}
 
-      <Routes>
-        <Route path="/" element={<MainCatalog />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-        {/* Rutas para administradores */}
-        <Route path="/admin" element={<AdminRoute isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />} />
-      </Routes>
+      {/* Contenedor principal que empuja el footer hacia abajo */}
+      <div className="flex-grow">
+        <Routes>
+          <Route path="/" element={<MainCatalog />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+          {/* Rutas para administradores */}
+          <Route path="/admin" element={<AdminRoute isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />} />
+        </Routes>
+      </div>
+
+      {/* Renderizamos el Footer solo donde se muestra el Navbar */}
+      {showNavbar && <Footer />}
     </div>
   );
 }
