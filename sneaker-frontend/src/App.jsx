@@ -14,6 +14,7 @@ import { useSneakers } from './hooks/useSneakers';
 import { CartProvider } from './context/CartContext';
 
 import Footer from './components/layout/Footer';
+import HeroBanner from './components/layout/HeroBanner';
 
 function MainCatalog() {
   const { sneakers, loading, error, refreshSneakers } = useSneakers();
@@ -21,7 +22,8 @@ function MainCatalog() {
   
   return (
     <>
-      <main className="max-w-7xl mx-auto px-6 py-16 min-h-screen">
+      <HeroBanner />
+      <main id="catalogo-productos" className="max-w-7xl mx-auto px-6 py-16 min-h-screen">
         <div className="mb-12 border-b border-neutral-200 pb-6 flex items-baseline justify-between">
           <div>
             <span className="text-[10px] font-mono tracking-widest uppercase text-neutral-500 block mb-1">
