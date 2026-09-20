@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram, Twitter, Facebook, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Footer() {
@@ -14,10 +14,10 @@ export default function Footer() {
           <p className="text-sm text-neutral-400 leading-relaxed">
             Tu destino definitivo para el mejor calzado urbano y deportivo. Ediciones limitadas, calidad premium y estilo inigualable.
           </p>
-          <div className="flex gap-4 pt-4">
-            <a href="#" className="text-neutral-400 hover:text-supreme-red transition-colors" aria-label="Instagram"><Instagram className="w-5 h-5" /></a>
-            <a href="#" className="text-neutral-400 hover:text-supreme-red transition-colors" aria-label="Twitter"><Twitter className="w-5 h-5" /></a>
-            <a href="#" className="text-neutral-400 hover:text-supreme-red transition-colors" aria-label="Facebook"><Facebook className="w-5 h-5" /></a>
+          <div className="flex gap-4 pt-4 text-xs font-bold tracking-widest">
+            <a href="#" className="text-neutral-400 hover:text-supreme-red transition-colors" aria-label="Instagram">INSTAGRAM</a>
+            <a href="#" className="text-neutral-400 hover:text-supreme-red transition-colors" aria-label="Twitter">TWITTER</a>
+            <a href="#" className="text-neutral-400 hover:text-supreme-red transition-colors" aria-label="Facebook">FACEBOOK</a>
           </div>
         </div>
 
