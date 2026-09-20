@@ -21,9 +21,9 @@ public class SneakerVariant {
     @JoinColumn(name = "sneaker_id", nullable = false)
     private Sneaker sneaker;
 
-    // La talla del tenis (Ej: 8.5, 9.0, 10.0 en escala US)
-    @Column(nullable = false)
-    private Float size;
+    // La talla del tenis (Ej: "7 US / 40 EUR / 38 COL / 25 CM (MEN)")
+    @Column(name = "size_name", nullable = false, length = 150)
+    private String size;
 
     // El color específico de esta variante (Ej: "Blanco/Negro")
     @Column(nullable = false, length = 50)

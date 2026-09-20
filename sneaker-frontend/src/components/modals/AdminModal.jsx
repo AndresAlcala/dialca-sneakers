@@ -88,7 +88,7 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
     setIsSubmittingVariant(true);
     try {
       await sneakerApi.createVariant(selectedSneakerId, {
-        size: parseFloat(variantData.size),
+        size: variantData.size.trim(),
         color: variantData.color || 'Default',
         stockQuantity: Number(variantData.stockQuantity)
       });
@@ -246,11 +246,11 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
 
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Talla (US)</label>
-                  <input required type="number" step="0.5"
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Talla (Formato Libre)</label>
+                  <input required type="text"
                     className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
                     value={variantData.size} onChange={e => setVariantData({...variantData, size: e.target.value})}
-                    placeholder="Ej. 9.5"
+                    placeholder="Ej. 7 US / 40 EUR..."
                   />
                 </div>
                 <div>
