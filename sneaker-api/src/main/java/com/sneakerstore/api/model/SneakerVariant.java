@@ -25,6 +25,10 @@ public class SneakerVariant {
     @Column(name = "size_name", nullable = false, length = 150)
     private String size;
 
+    // Campo heredado para evitar el error 500 por la restricción NOT NULL de la BD anterior
+    @Column(name = "size", nullable = false)
+    private Float legacySize = 0f;
+
     // El color específico de esta variante (Ej: "Blanco/Negro")
     @Column(nullable = false, length = 50)
     private String color;
