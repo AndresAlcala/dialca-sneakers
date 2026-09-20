@@ -245,13 +245,28 @@ export default function AdminModal({ onClose, sneakers, refreshCatalog }) {
               </div>
 
               <div className="grid grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Talla (Formato Libre)</label>
-                  <input required type="text"
-                    className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors"
-                    value={variantData.size} onChange={e => setVariantData({...variantData, size: e.target.value})}
-                    placeholder="Ej. 7 US / 40 EUR..."
-                  />
+                <div className="relative">
+                  <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Talla (Formato Fijo)</label>
+                  <div className="relative">
+                    <select required
+                      className="w-full bg-transparent border-2 border-neutral-700 focus:border-supreme-red p-3 text-sm outline-none transition-colors text-white appearance-none cursor-pointer"
+                      value={variantData.size} onChange={e => setVariantData({...variantData, size: e.target.value})}
+                    >
+                      <option value="" disabled className="bg-black text-white">-- Elige una talla --</option>
+                      <option value="7 US / 40 EUR / 38 COL / 25 CM (MEN)" className="bg-black text-white">7 US / 40 EUR / 38 COL / 25 CM (MEN)</option>
+                      <option value="7.5 US / 40.5 EUR / 38.5 COL / 25.5 CM (MEN)" className="bg-black text-white">7.5 US / 40.5 EUR / 38.5 COL / 25.5 CM (MEN)</option>
+                      <option value="8.0 US / 41 EUR / 39 COL / 26 CM (MEN)" className="bg-black text-white">8.0 US / 41 EUR / 39 COL / 26 CM (MEN)</option>
+                      <option value="8.5 US / 42 EUR / 40 COL / 26.5 CM (MEN)" className="bg-black text-white">8.5 US / 42 EUR / 40 COL / 26.5 CM (MEN)</option>
+                      <option value="9.0 US / 42.5 EUR / 40.5 COL / 27 CM (MEN)" className="bg-black text-white">9.0 US / 42.5 EUR / 40.5 COL / 27 CM (MEN)</option>
+                      <option value="9.5 US / 43 EUR / 41 COL / 27.5 CM (MEN)" className="bg-black text-white">9.5 US / 43 EUR / 41 COL / 27.5 CM (MEN)</option>
+                      <option value="10 US / 44 EUR / 42 COL / 28 CM (MEN)" className="bg-black text-white">10 US / 44 EUR / 42 COL / 28 CM (MEN)</option>
+                      <option value="10.5 US / 44.5 EUR / 42.5 COL / 28.5 CM (MEN)" className="bg-black text-white">10.5 US / 44.5 EUR / 42.5 COL / 28.5 CM (MEN)</option>
+                      <option value="11 US / 45 EUR / 43 COL / 29 CM (MEN)" className="bg-black text-white">11 US / 45 EUR / 43 COL / 29 CM (MEN)</option>
+                      <option value="11.5 US / 45.5 EUR / 43.5 COL / 29.5 CM (MEN)" className="bg-black text-white">11.5 US / 45.5 EUR / 43.5 COL / 29.5 CM (MEN)</option>
+                      <option value="12 US / 46 EUR / 44 COL / 30 CM (MEN)" className="bg-black text-white">12 US / 46 EUR / 44 COL / 30 CM (MEN)</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 pointer-events-none" />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-[10px] font-black tracking-widest mb-2 uppercase">Color</label>
